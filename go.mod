@@ -1,3 +1,3 @@
-module set
+module bitwise-operations-ex02
 
 go 1.17

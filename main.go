@@ -1,8 +1,8 @@
 package main
 
 import (
+	"bitwise-operations-ex02/set"
 	"fmt"
-	"set/set"
 )
 
 func main() {

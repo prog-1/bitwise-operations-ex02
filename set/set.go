@@ -1,3 +1,4 @@
+// Package set implements an algebraic set and set operations.
 package set
 
 // Set represents a set of elements. The elements are integers in range [0..63].

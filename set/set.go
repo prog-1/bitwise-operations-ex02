@@ -12,7 +12,7 @@ type Set uint64
 const Empty = Set(0)
 
 // String returns a string representation of the set, e.g. "{0, 1, 2}".
-func String(s Set) string {
+func String(s Set) string{
 	return ""
 }
 
@@ -22,7 +22,7 @@ func String(s Set) string {
 // IsEmpty({}) -> true
 // IsEmpty({5}) -> false.
 func IsEmpty(s Set) bool {
-	return false
+	return s&^0 == 0 
 }
 
 // Len returns the number of elements in the set.
@@ -30,8 +30,13 @@ func IsEmpty(s Set) bool {
 // Examples:
 // Len({}) -> 0
 // Len({0, 1, 2}) -> 3
-func Len(s Set) int {
-	return 0
+func Len(s Set) (cnt int) {
+	for i := 0; i < 64; i, s = i+1, s>>1 {
+		if s&1 == 1 {
+			cnt++
+		}
+	}
+	return cnt
 }
 
 // Elements returns a slice of set elements.
@@ -49,7 +54,10 @@ func Elements(s Set) []int {
 // Add({0, 1, 2}, 5) -> {0, 1, 2, 5}, nil
 // Add({0, 1, 2}, 64) -> {}, error
 func Add(s Set, n int) (Set, error) {
-	return Empty, nil
+	if n << 1 == 0 || n < 0 {
+		return Empty, nil
+	}
+	return s | (1 << n - 1)
 }
 
 // Contains returns true iff the element `n` exists in the set.
@@ -58,8 +66,7 @@ func Add(s Set, n int) (Set, error) {
 // Contains({0, 1, 2}, 2) -> true
 // Contains({0, 1, 2}, 3) -> false
 func Contains(s Set, n int) bool {
-	return false
-}
+	return (s >> n)&1 == 1
 
 // Remove returns a new set that does not contain the element `n`.
 //
@@ -67,7 +74,7 @@ func Contains(s Set, n int) bool {
 // Remove({0, 1, 2}, 1) -> {0, 2}
 // Remove({0, 1, 2}, 4) -> {0, 1, 2}
 func Remove(s Set, n int) Set {
-	return Empty
+	return s &^ (1 << n)
 }
 
 // Union returns a new set that is a union of two sets.

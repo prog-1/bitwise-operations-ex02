@@ -12,6 +12,7 @@ type Set uint64
 const Empty = Set(0)
 
 // String returns a string representation of the set, e.g. "{0, 1, 2}".
+
 func String(s Set) string {
 	return ""
 }
@@ -22,7 +23,7 @@ func String(s Set) string {
 // IsEmpty({}) -> true
 // IsEmpty({5}) -> false.
 func IsEmpty(s Set) bool {
-	return false
+	return s == 0
 }
 
 // Len returns the number of elements in the set.
@@ -31,15 +32,26 @@ func IsEmpty(s Set) bool {
 // Len({}) -> 0
 // Len({0, 1, 2}) -> 3
 func Len(s Set) int {
-	return 0
+	var len int
+	for i := 0; i < 64; i, s = i+1, s>>1 {
+		if s&1 == 1 {
+			len++
+		}
+	}
+	return len
 }
 
 // Elements returns a slice of set elements.
 //
 // Examples:
 // Elements({0, 1, 2}) -> []int{0, 1, 2}
-func Elements(s Set) []int {
-	return nil
+func Elements(s Set) (result []int) {
+	for i := 0; i < 64; i, s = i+1, s>>1 {
+		if s&1 == 1 {
+			result = append(result, i)
+		}
+	}
+	return result
 }
 
 // Add returns a new set that contains the integer `n`.
@@ -52,13 +64,13 @@ func Add(s Set, n int) (Set, error) {
 	return Empty, nil
 }
 
-// Contains returns true iff the element `n` exists in the set.
+// Contains returns true if the element `n` exists in the set.
 //
 // Examples:
 // Contains({0, 1, 2}, 2) -> true
 // Contains({0, 1, 2}, 3) -> false
 func Contains(s Set, n int) bool {
-	return false
+	return (s>>n)&1 == 1
 }
 
 // Remove returns a new set that does not contain the element `n`.
@@ -67,7 +79,7 @@ func Contains(s Set, n int) bool {
 // Remove({0, 1, 2}, 1) -> {0, 2}
 // Remove({0, 1, 2}, 4) -> {0, 1, 2}
 func Remove(s Set, n int) Set {
-	return Empty
+	return s &^ (1 << n)
 }
 
 // Union returns a new set that is a union of two sets.
@@ -77,7 +89,7 @@ func Remove(s Set, n int) Set {
 // Union({0, 1, 2}, {1, 3, 4}) -> {0, 1, 2, 3, 4}
 // Union({0, 1, 2}, {}) -> {0, 1, 2}
 func Union(s1, s2 Set) Set {
-	return Empty
+	return s1 | s2
 }
 
 // Intersection returns a new set that is an intersection of two sets.
@@ -87,7 +99,7 @@ func Union(s1, s2 Set) Set {
 // Intersection({0, 1, 2}, {2, 3, 4}) -> {2}
 // Intersection({0, 1, 2}, {}) -> {}
 func Intersection(s1, s2 Set) Set {
-	return Empty
+	return s1 & s2
 }
 
 // Difference returns a new set that is a difference of two sets.
@@ -96,7 +108,7 @@ func Intersection(s1, s2 Set) Set {
 // Examples:
 // Difference({0, 1, 2}, {1, 5}) -> {0, 2, 5}
 func Difference(s1, s2 Set) Set {
-	return Empty
+	return s1 ^ s2
 }
 
 // Subtract returns a new set that contains elements that are present
@@ -105,5 +117,5 @@ func Difference(s1, s2 Set) Set {
 // Examples:
 // Subtract({0, 1, 2}, {1, 4}) -> {0, 2}
 func Subtract(s1, s2 Set) Set {
-	return Empty
+	return s1 &^ s2
 }

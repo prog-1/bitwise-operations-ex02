@@ -6,7 +6,7 @@ import (
 )
 
 func main() {
-	s := set.Set(123)
+	s := set.Set(0b1111011)
 	s2 := set.Set(0b0101)
 	n := 5
 	fmt.Println("1. String returns a string representation of the set.")

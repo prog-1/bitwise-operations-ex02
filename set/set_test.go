@@ -76,8 +76,9 @@ func TestAdd(t *testing.T) {
 		n    int
 		want Set
 	}{
-		{},
-		{},
+		{0, 1, 0b10},
+		{0b10000, 1, 0b10010},
+		{0b1111111, 1, 0b1111111},
 	} {
 		got, _ := Add(tc.s, tc.n)
 		if got != tc.want {
@@ -92,10 +93,10 @@ func TestContains(t *testing.T) {
 		n    int
 		want bool
 	}{
-		{},
-		{},
-		{},
-		{},
+		{0, 1, false},
+		{0b101010, 0, false},
+		{0b10000100101, 2, true},
+		{0b100000000101010101, 63, false},
 	} {
 		got := Contains(tc.s, tc.n)
 		if got != tc.want {
@@ -110,9 +111,9 @@ func TestRemove(t *testing.T) {
 		n    int
 		want Set
 	}{
-		{},
-		{},
-		{},
+		{0b111, 0, 0b110},
+		{0b101010, 1, 0b101000},
+		{0b10111, 3, 0b10111},
 	} {
 		got := Remove(tc.s, tc.n)
 		if got != tc.want {
@@ -127,9 +128,9 @@ func TestUnion(t *testing.T) {
 		s2   Set
 		want Set
 	}{
-		{},
-		{},
-		{},
+		{0, 0b10, 0b10},
+		{0b10011101, 0b1100010, 0b1111111},
+		{0b100101, 0b11000, 0b111101},
 	} {
 		got := Union(tc.s1, tc.s2)
 		if got != tc.want {
@@ -144,10 +145,9 @@ func TestIntersection(t *testing.T) {
 		s2   Set
 		want Set
 	}{
-		{},
-		{},
-		{},
-		{0b10100111, 0b101010, 0b100010},
+		{0b10101011, 0b11101, 0b10101},
+		{0b1111, 0b1011, 0b1011},
+		{0b10100111, 0b10101010, 0b10100010},
 	} {
 		got := Intersection(tc.s1, tc.s2)
 		if got != tc.want {

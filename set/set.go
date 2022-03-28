@@ -1,6 +1,11 @@
 // Package set implements an algebraic set and operations for sets.
 package set
 
+import (
+	"fmt"
+	"strconv"
+)
+
 // Set represents a set of elements. The elements are integers in range [0..63].
 //
 // Examples:
@@ -12,8 +17,18 @@ type Set uint64
 const Empty = Set(0)
 
 // String returns a string representation of the set, e.g. "{0, 1, 2}".
-func String(s Set) string {
-	return ""
+func String(s Set) (st string) {
+	st += "{"
+	for i := 0; i < 64; i, s = i+1, s>>1 {
+		if s&1 == 1 {
+			if st != "{" {
+				st += ", "
+			}
+			st += strconv.Itoa(i)
+		}
+	}
+	st += "}"
+	return st
 }
 
 // IsEmpty returns true iff the set is empty.
@@ -22,7 +37,7 @@ func String(s Set) string {
 // IsEmpty({}) -> true
 // IsEmpty({5}) -> false.
 func IsEmpty(s Set) bool {
-	return false
+	return s == 0 
 }
 
 // Len returns the number of elements in the set.
@@ -30,16 +45,26 @@ func IsEmpty(s Set) bool {
 // Examples:
 // Len({}) -> 0
 // Len({0, 1, 2}) -> 3
-func Len(s Set) int {
-	return 0
+func Len(s Set) (len int) {
+	for i := 0; i < 64; i, s = i+1, s>>1 {
+		if s&1 == 1 {
+			len++
+		}
+	}
+	return len
 }
 
 // Elements returns a slice of set elements.
 //
 // Examples:
 // Elements({0, 1, 2}) -> []int{0, 1, 2}
-func Elements(s Set) []int {
-	return nil
+func Elements(s Set) (result []int) {
+	for i := 0; i < 64; i, s = i+1, s>>1 {
+		if s&1 == 1 {
+			result = append(result, i)
+		}
+	}
+	return result
 }
 
 // Add returns a new set that contains the integer `n`.
@@ -49,7 +74,14 @@ func Elements(s Set) []int {
 // Add({0, 1, 2}, 5) -> {0, 1, 2, 5}, nil
 // Add({0, 1, 2}, 64) -> {}, error
 func Add(s Set, n int) (Set, error) {
-	return Empty, nil
+	var err error
+	if n >= 64 {
+		fmt.Println("Can't add")
+	}
+	if n < 0 {
+		fmt.Println("Can't add")
+	}
+	return (1 << n) | s, err
 }
 
 // Contains returns true iff the element `n` exists in the set.
@@ -58,6 +90,9 @@ func Add(s Set, n int) (Set, error) {
 // Contains({0, 1, 2}, 2) -> true
 // Contains({0, 1, 2}, 3) -> false
 func Contains(s Set, n int) bool {
+	if s&(1<<n) > 0 {
+		return true
+	}
 	return false
 }
 
@@ -67,7 +102,7 @@ func Contains(s Set, n int) bool {
 // Remove({0, 1, 2}, 1) -> {0, 2}
 // Remove({0, 1, 2}, 4) -> {0, 1, 2}
 func Remove(s Set, n int) Set {
-	return Empty
+	return s &^ (1 << n)
 }
 
 // Union returns a new set that is a union of two sets.
@@ -77,7 +112,7 @@ func Remove(s Set, n int) Set {
 // Union({0, 1, 2}, {1, 3, 4}) -> {0, 1, 2, 3, 4}
 // Union({0, 1, 2}, {}) -> {0, 1, 2}
 func Union(s1, s2 Set) Set {
-	return Empty
+	return s1 | s2
 }
 
 // Intersection returns a new set that is an intersection of two sets.
@@ -87,7 +122,7 @@ func Union(s1, s2 Set) Set {
 // Intersection({0, 1, 2}, {2, 3, 4}) -> {2}
 // Intersection({0, 1, 2}, {}) -> {}
 func Intersection(s1, s2 Set) Set {
-	return Empty
+	return s1 & s2
 }
 
 // Difference returns a new set that is a difference of two sets.
@@ -96,7 +131,7 @@ func Intersection(s1, s2 Set) Set {
 // Examples:
 // Difference({0, 1, 2}, {1, 5}) -> {0, 2, 5}
 func Difference(s1, s2 Set) Set {
-	return Empty
+	return s1 ^ s2
 }
 
 // Subtract returns a new set that contains elements that are present
@@ -105,5 +140,5 @@ func Difference(s1, s2 Set) Set {
 // Examples:
 // Subtract({0, 1, 2}, {1, 4}) -> {0, 2}
 func Subtract(s1, s2 Set) Set {
-	return Empty
+	return s1 &^ s2
 }

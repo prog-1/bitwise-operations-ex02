@@ -37,10 +37,7 @@ func String(s Set) (st string) {
 // IsEmpty({}) -> true
 // IsEmpty({5}) -> false.
 func IsEmpty(s Set) bool {
-	if s == 0 {
-		return true
-	}
-	return false
+	return s == 0 
 }
 
 // Len returns the number of elements in the set.
